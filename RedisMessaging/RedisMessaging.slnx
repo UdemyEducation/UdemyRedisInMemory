@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="RedisMessaging.Api/RedisMessaging.Api.csproj" />
+  <Project Path="RedisMessaging.AppHost/RedisMessaging.AppHost.csproj" />
+  <Project Path="RedisMessaging.ServiceDefaults/RedisMessaging.ServiceDefaults.csproj" />
+  <Project Path="RedisMessaging.Shared/RedisMessaging.Shared.csproj" />
+  <Project Path="RedisMessaging.Worker/RedisMessaging.Worker.csproj" />
+</Solution>

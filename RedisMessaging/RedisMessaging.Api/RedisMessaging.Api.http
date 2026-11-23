@@ -1,0 +1,71 @@
+@Api = http://localhost:5220
+
+### ===================== 1. Redis Pub/Sub =====================
+
+### PUBLISH notifications "hello"  => receivedBy: 3 (3 worker replikası)
+POST {{Api}}/api/pubsub/publish?channel=notifications&message=hello
+
+### Dinleyeni olmayan kanal => receivedBy: 0, mesaj kayboldu (No Persistence)
+POST {{Api}}/api/pubsub/publish?channel=nobody&message=hello
+
+### PSUBSCRIBE örnekleri (user.* | order.*.created | logs.*.error)
+POST {{Api}}/api/pubsub/publish-samples
+
+### Kullanım senaryosu: cache invalidation
+POST {{Api}}/api/pubsub/use-cases/cache-invalidate/product:1
+
+### Kullanım senaryosu: config change broadcast
+POST {{Api}}/api/pubsub/use-cases/config-changed?name=FeatureX&value=on
+
+### SPUBLISH live.scores (Sharded Pub/Sub)
+POST {{Api}}/api/pubsub/sharded/publish?message=GS 2-1 FB
+
+### PUBSUB CHANNELS / NUMSUB / NUMPAT
+GET {{Api}}/api/pubsub/channels
+
+### ===================== 2. Pub/Sub EventBus =====================
+
+POST {{Api}}/api/events/order-created?total=250
+
+###
+POST {{Api}}/api/events/payment-processed?orderId=ORD-1&success=true
+
+### ===================== 3. Redis Streams - Producer =====================
+
+### XADD sensors * sensor-id 1234 temp 19.8  (Worker XREAD BLOCK ile canlı okur)
+POST {{Api}}/api/streams/sensors?sensorId=1234&temp=19.8
+
+### XADD orders => g1 grubunda 3 consumer'a paylaştırılır, analytics grubu hepsini alır
+POST {{Api}}/api/streams/orders?count=6
+
+### XADD payments => bazıları "çöker", XAUTOCLAIM ile kurtarılır, 3 denemede olmazsa DLQ
+POST {{Api}}/api/streams/payments?count=10
+
+### XADD logs MAXLEN ~ 1000 *
+POST {{Api}}/api/streams/logs?count=2500&approximate=true
+
+### ===================== 4. Okuma & Yönetim =====================
+
+### XRANGE sensors - + COUNT 10
+GET {{Api}}/api/streams/sensors/range
+
+### XREVRANGE orders + - COUNT 3
+GET {{Api}}/api/streams/orders/revrange?count=3
+
+### XLEN + XINFO STREAM + XINFO GROUPS
+GET {{Api}}/api/streams/orders/info
+
+### XPENDING payments payment-processors
+GET {{Api}}/api/streams/payments/groups/payment-processors/pending
+
+### Dead-letter stream
+GET {{Api}}/api/streams/payments:dlq/range
+
+### XTRIM logs MAXLEN 500
+POST {{Api}}/api/streams/logs/trim?maxLength=500
+
+### XTRIM sensors MINID <10 dk önce>
+POST {{Api}}/api/streams/sensors/trim-by-time?olderThanMinutes=10
+
+### XDEL sensors <id>
+DELETE {{Api}}/api/streams/sensors/entries/1700000000000-0

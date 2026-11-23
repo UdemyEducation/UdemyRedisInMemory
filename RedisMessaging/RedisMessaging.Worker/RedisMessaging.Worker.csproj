@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-RedisMessaging.Worker-0143836d-227d-4228-92fb-a4ad9c264188</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.StackExchange.Redis" Version="17.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="11.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RedisMessaging.ServiceDefaults\RedisMessaging.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\RedisMessaging.Shared\RedisMessaging.Shared.csproj" />
+  </ItemGroup>
+</Project>
